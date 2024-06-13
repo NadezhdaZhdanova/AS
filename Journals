@@ -1,0 +1,13 @@
+Sudo less /….
+
+Системный журнал
+
+/var/log/syslog
+
+PARSEC
+
+/parsec/log/astra/events
+/var/log/astra/events
+Prevlogin-<username>
+Astra-safepolicy.log
+
