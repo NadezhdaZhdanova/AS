@@ -1,0 +1,35 @@
+Диагностика
+
+ip a – данные о интерфейсах
+
+sudo ss -tanp          t - TCP-соединения, a - только те, что ждут соединения, n - числа вместо имен портов, p - показать процесс
+
+Настройка сети с графикой 
+
+службы NetworkManager + графический апплет
+dhclient – DHCP
+
+Настройка сети без графики
+
+1.	/etc/network/interfaces - старый и неправильный
+2.	systemd-networkd -     новый и правильный
+клиент DHCP
+1.	dhclient и именно его использует NetworkManager (можно делать хуки - кастомные скрипты, которые выполняются, когда он получает адрес. Это позволяет через DHCP настраивать не только IP, а вообще что угодно)
+2.	systemd-networkd – со своим клиентом
+
+Устнановка DHCP сервера
+
+sudo apt install isc-dhcp-server
+Конфигурация DHCP:
+1.	/etc/default/isc-dhcp-server - глобальные опции (переменные среды)
+INTERFACESv4="<eth2>" –  интерфейс смотрящий во внутреннюю сеть
+ 
+2.	/etc/dhcp/dhcpd.conf   - настройки самого сервера (диапазоны, опции)
+default-lease-time 600;
+max-lease-time 7200;
+ authoritative;
+ subnet 192.168.99.0 netmask 255.255.255.0 {
+  host astraclient { hardware ethernet 08:00:27:xx:xx:xx; fixed-address 192.168.99.129; }
+}
+Где hardware ethernet 08:00:27:xx:xx:xx – MAC хоста, которому нужен адрес
+Fixed-address – желаемый адрес
