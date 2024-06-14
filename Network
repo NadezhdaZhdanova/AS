@@ -13,6 +13,7 @@ dhclient – DHCP
 
 1.	/etc/network/interfaces - старый и неправильный
 2.	systemd-networkd -     новый и правильный
+
 клиент DHCP
 1.	dhclient и именно его использует NetworkManager (можно делать хуки - кастомные скрипты, которые выполняются, когда он получает адрес. Это позволяет через DHCP настраивать не только IP, а вообще что угодно)
 2.	systemd-networkd – со своим клиентом
@@ -20,6 +21,8 @@ dhclient – DHCP
 Устнановка DHCP сервера
 
 sudo apt install isc-dhcp-server
+sudo systemctl restart isc-dhcp-server                   перезапуск DHCP-сервера
+
 Конфигурация DHCP:
 1.	/etc/default/isc-dhcp-server - глобальные опции (переменные среды)
 INTERFACESv4="<eth2>" –  интерфейс смотрящий во внутреннюю сеть
@@ -33,3 +36,101 @@ max-lease-time 7200;
 }
 Где hardware ethernet 08:00:27:xx:xx:xx – MAC хоста, которому нужен адрес
 Fixed-address – желаемый адрес
+
+pool {
+ 		 range 192.168.99.65 192.168.99.126; 	Задает диапозон, из которого можно брать адрес неизвестным клиентам
+ 		 allow unknown-clients;
+}
+
+/var/lib/dhcp/dhcpd.leases	при динамической аренде записываются выданные адреса, по умолчанию он бинарный (двоичный)
+
+Первая попытка продления аренды обычно случается в 50% времени
+Даже если не получилось, клиент продолжит использовать адрес
+Начиная с 87,5% времени начнет слать запросы широковещательно
+
+NAT (Network Address Translation)
+NAT = SNAT (подмена отправителя) + DNAT (подмена получателя)
+Для маршрутизаторов нужно принимать пакеты, адресованные другим. Это нужно отдельно устанавливать на уровне ядра ОС
+sudo sysctl -w net.ipv4.ip_forward=1		включает в ядре возможность маршрутизации
+
+sudo iptables -t nat -A POSTROUTING -s 192.168.99.0/24 -j MASQUERADE 	если к тебе прилетел пакет из сети 192.168.99.0/24 и ты выполнял для него маршрутизацию, то перед самой отправкой подмени адрес на свой
+
+Параметры ядра, которые задаются с помощью sysctl, могут задаваться двумя способами:
+1. /etc/sysctl.conf 	это "общежитие" для настроек и не очень понятно, где там наша
+
+2. /etc/sysctl.d 		В этой директории можно создавать отдельный файл и писать туда свои настройки
+sudo nano /etc/sysctl.d/999-router.conf     ---           net.ipv4.ip_forward=1
+
+Проверить 
+sudo sysctl -a | grep ip_forward	смотрю текущие настройки
+
+sudo sysctl -w net.ipv4.ip_forward=0	выключаю настройку
+sudo sysctl -a | grep ip_forward	смотрю текущие настройки
+sudo sysctl –system	имитирую применение настроек при загрузке системыsudo sysctl -a | grep ip_forward
+sudo sysctl -a | grep ip_forward	смотрю текущие настройки
+
+systemd-networkd позволяет эту настройку настраивать не отдельно в ядре, а прописывать в сетевых настройках
+iptables-save 	команда выводит настройки подсистемы netfilter на экран
+
+iptables-save > /etc/iptables.conf	правила из оперативной памяти пишеn в файл
+iptables -F -t nat	очищет все правила в оперативной памяти (важно указать -t nat)
+iptables-restore /etc/iptables.conf	пробую восстановить настройки в оперативную память из файла
+
+Диагностика:
+
+sudo iptables -t nat -nvL
+прошу показать мне правила из таблицы nat
+
+Правила из оперативной памяти записать в файл
+1 способ
+sudo -i
+iptables-save > /etc/iptables.conf
+2 способ
+sudo iptables-save | sudo tee /etc/iptables.conf
+
+DNS
+
+NBNS - NetBIOS Name Services, или проще говоря DNS в одном сегменте, построенный не на запросе куда-то, а на широковещательных запросах (и ответах)(только в Windows)
+LLMNR - Link Local Multicast Name Resolution - чуть похоже на NBNS, только использует мультикаст и меньше нагружает сеть
+MDNS - Multicast DNS
+
+FQDN = kek.mydomain.corp.
+Hostname = kek
+Domain (suffix) = mydomain.corp
+kek - не FQDN
+kek. – FQDN
+
+/etc/hostname - содержит только имя компьютера
+/etc/hosts
+127.0.1.1  kek.mydomain.corp kek
+
+Unbound – пакет резольвера
+(sudo apt install unbound)
+
+Проверка:
+host ya.ru 127.0.0.1 – ответ ip
+sudo ss –uanp		показать все ожидающие соединения сокеты на udp
+
+директория /etc/unbound/unbound.conf.d/, любой файл с расширением .conf будет оттуда втащен в конфиг
+
+Пример:
+sudo nano /etc/unbound/unbound.conf.d/lan.conf
+
+server:
+  verbosity: 1
+  module-config: "iterator"
+  interface: 0.0.0.0	слушать на всех интерфейсах (можно только на локальных серверах)
+  port: 53
+  access-control: 0.0.0.0/0 allow		доступ всем жела
+
+sudo unbound-checkconf	проверяю конфиг на синтаксис
+
+чтобы клиент ходил к моему резольверу с запросами, а не куда-то еще.
+sudo nano /etc/dhcp/dhcpd.conf
+option domain-name-servers 192.168.99.1; 	адрес резольвера
+(если резольверов несколько, то через запятую, но без пробела)
+
+Перезапуск сервера dhcp (sudo systemctl restart isc-dhcp-server)
+ВКЛ/Выкл сеть на клиенте
+   
+
