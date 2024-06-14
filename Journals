@@ -11,3 +11,123 @@ PARSEC
 Prevlogin-<username>
 Astra-safepolicy.log
 
+
+
+ps auxwf     –             prosesses with user,Cpu, Tty, State and command + tree
+
+ss –tupln
+netstat –plunto            -        listening ports with processes
+
+last – Faiwx        -           list of users that have logged in
+
+tail /var/log/<file>
+cat ~/.bash_history 
+cat /var/log/auth.log|grep –iE “sessions opened for|accepted password|new session|not in sudoers”
+cat /var/log/auth.log|grep “sshd”
+journalctl –u ssh
+cat/var/log/dpgk/log|grep installed
+cat /var/log/messages|grep dhcp|head
+
+ls – lta               - sorted list directory contents (by modification time)
+
+lsof –V                - opened files(verbos)
+find /-mtime -2 –ls              -   files that has been modified in system for 2 days
+
+stat ||statx||istat                          -        file )system) status
+
+
+SYS INFO
+
+/proc/version
+/usr/lib/reliese 
+/etc/relies
+/etc/localtime						OS info, timezone
+
+Proc/mounts
+Etc/mtab                    					mounted fike system
+
+Etc/network/interfaces
+/var/lib/NerworkManager/*.lease
+/var/lib/dhcp/*.lese
+/etc/sysconfig/network-script/ifcfg-*
+Etc/sysconfig/iptables                                                            network, routes
+
+/proc/[PID]/cmdline                              			processes
+
+
+/var/log
+
+
+/auth.log(D)
+/secure (R) 		authentificaton logs for both successful or failed logins
+
+/lastlog			every user’s last login (via /user/bin/lastlogon)
+/btmp			a note of all failed login attempts
+/wtmp			record of each login/logout
+/cron			cron-related massages планировщик задач
+/dpgk
+/apt/history.log		package ,anipulations
+/audit/audit.log 	
+
+
+
+Shell history
+
+~/bash_history
+~/history
+~/.sh_history
+~/.*_history
+
+File SYS
+
+Аномалии:
+-	Недавно удаленные
+-	Скрытые
+-	Символические ссылки
+-	Большие файлы
+-	Разрешение файлов (extra, setuid )
+
+User ACC
+
+/etc/passwd
+/etc/shadow
+/etc/group
+/etc/sudoers
+/etc/sudoers.d/*
+/etc/profile
+/etc/profile.d/*
+/etc/bash.bashrc
+
+Psd/shadow
+Что лежит в /home/  ,/root/
+
+
+PUBLIC FACING APP
+
+Провери
+-  архитектуру
+- настрйоки безопасности
+- Уязвимости
+- конфигурация, логи, специальные дерриктории
+
+
+PERSIST
+
+/etc/cron/
+/var/spool/cron/
+Var/spool/cron/crontabs/<username>
+/var/spool/cron/atjobs
+/var/spool/anacron
+/etc/cron*
+/etc/at*
+/etc/inittab/etc/init.d/etc/rd[O-6].d/
+Etc/rc.boot
+/etc/init.conf/etc/inetd.conf
+/etc/init
+/lib/system/system/*
+/etc/system/system/*
+/etc/system/system/multi-user.target.wants/
+/etc/rc.local
+
+
+
