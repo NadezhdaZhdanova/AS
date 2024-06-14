@@ -22,3 +22,5 @@ sudo apt dist-upgrade            Дебиан команда
 ssh ip-адрес -l login
 
 
+
+sudo -i режим суперпользователя
