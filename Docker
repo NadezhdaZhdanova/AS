@@ -10,6 +10,12 @@ docker ls   все существующие контейнеры
 
 docker container start     запустить контейнер
 
-docker container run new_container   создать новый контейнер
+docker container run -p 80:80 new_container   создать новый контейнер с пробросом портов запросы с порта 80 сервера:в порт 80 внутри контейнера
 
 docker inspect conteiner_id   вся информация по указанному контенеру
+
+docker stats  требуемые ресурсы
+
+docker logs cont_id
+
+docker exec -it cont_id /bin/bash запустить баш внутри контейнера
