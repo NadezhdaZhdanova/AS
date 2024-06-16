@@ -1,11 +1,15 @@
 docker --version
 
-docker ps все запущенные контейнеры
+docker ps все запущенные процессы
 
-docker ps -a все зпускавшиеся контейнеры
+docker ps -a все зпускавшиеся процессы
+
+docker images все контейнеры
 
 docker ls   все существующие контейнеры
 
 docker container start     запустить контейнер
 
 docker container run new_container   создать новый контейнер
+
+docker inspect conteiner_id   вся информация по указанному контенеру
