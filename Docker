@@ -1,0 +1,11 @@
+docker --version
+
+docker ps все запущенные контейнеры
+
+docker ps -a все зпускавшиеся контейнеры
+
+docker ls   все существующие контейнеры
+
+docker container start     запустить контейнер
+
+docker container run new_container   создать новый контейнер
