@@ -19,3 +19,5 @@ docker stats  требуемые ресурсы
 docker logs cont_id
 
 docker exec -it cont_id /bin/bash запустить баш внутри контейнера
+
+docker network ls  какие есть сети
