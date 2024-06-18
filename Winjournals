@@ -1,0 +1,30 @@
+Журнал безопасности  C:\Windows\System32\Logs
+
+Журнал приложений  C:\Windows\System32\Logs
+
+журнал установки  C:\Windows\System32\Logs
+
+журнал системы  C:\Windows\System32\Logs
+
+SystemAccessControlList список управления контролем над объектами
+
+Logon Type
+
+get-winevent   powerShel утилита для просмотра логов
+
+
+
+техники
+
+PowerShell
+
+sheduald Tasks
+
+Service Execution
+
+Registry Run Key
+
+RunDLL32
+
+Disable Monitor Tools
+OS credential Dump
